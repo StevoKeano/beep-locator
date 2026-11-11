@@ -110,12 +110,13 @@ class Room:
             "signature": signature
         }
         
-    def broadcast_message(self, message: Dict[str, Any]):
+    async def broadcast_message(self, message: Dict[str, Any]):
         """Broadcast a message to all connected nodes."""
         for node in self.nodes.values():
             if node.connected and node.ws is not None:
                 try:
-                    node.ws.send_str(json.dumps(message))
+                    # Use send_str with proper async handling
+                    await node.ws.send_str(json.dumps(message))
                 except Exception as e:
                     logger.error(f"Error broadcasting to node {node.id}: {e}")
                     

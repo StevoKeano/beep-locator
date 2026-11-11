@@ -46,12 +46,20 @@ class TestServer(AioHTTPTestCase):
         """Test admin UI endpoint."""
         response = await self.client.request("GET", "/")
         assert response.status == 200
+        body = await response.text()
+        assert "Beep Locator - Admin" in body
+        assert "/static/admin.js" in body
+        assert "placeholder" not in body
 
     @unittest_run_loop
     async def test_listener_ui(self):
         """Test listener UI endpoint."""
-        response = await self.client.request("GET", "/listen")
+        response = await self.client.request("GET", "/listen?room=default")
         assert response.status == 200
+        body = await response.text()
+        assert "Beep Locator - Listener" in body
+        assert "/static/listener.js" in body
+        assert "placeholder" not in body
 
     @unittest_run_loop
     async def test_room_state_not_found(self):

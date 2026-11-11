@@ -7,7 +7,7 @@ import os
 from pathlib import Path
 
 from aiohttp import web
-from aiohttp.web import Application
+from aiohttp.web import Application, FileResponse
 
 from .rooms import RoomManager
 from .protocol import websocket_handler
@@ -53,14 +53,12 @@ async def health_handler(request):
 
 async def admin_handler(request):
     """Serve the admin UI."""
-    # This will be replaced with a proper template or static file serving
-    # For now, we'll use a simple response to confirm it's working
-    return web.Response(text="Admin UI placeholder", content_type="text/html")
+    return FileResponse(path=Path(__file__).parent.parent / "static" / "admin.html")
 
 
 async def listener_handler(request):
     """Serve the listener client."""
-    return web.Response(text="Listener UI placeholder", content_type="text/html")
+    return FileResponse(path=Path(__file__).parent.parent / "static" / "listen.html")
 
 
 async def room_state_handler(request):
@@ -125,7 +123,7 @@ async def install_module_handler(request):
     body = await request.read()
     
     # Broadcast install_module message to all nodes in room
-    room.broadcast_message({
+    await room.broadcast_message({
         "type": "install_module",
         "module": "detector",  # Hardcoded for now
         "version": "2",       # Versioning scheme
@@ -156,7 +154,7 @@ async def mystery_target_handler(request):
     room.set_target(data["event_id"], data["signature"])
     
     # Broadcast to all clients
-    room.broadcast_message({
+    await room.broadcast_message({
         "type": "target",
         "event_id": data["event_id"],
         "signature": data["signature"]

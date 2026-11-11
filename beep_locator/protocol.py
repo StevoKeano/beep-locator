@@ -50,7 +50,8 @@ async def websocket_handler(request):
             "config": {
                 "room_width_m": room.width_m,
                 "room_height_m": room.height_m,
-                "grid_size_m": room.grid_size_m
+                "grid_size_m": room.grid_size_m,
+                "join_url": room.to_dict()["join_url"]
             },
             "nodes": [n.to_dict() for n in room.nodes.values()],
             "events": [e.to_dict() for e in room.events.values()],
@@ -126,7 +127,7 @@ async def handle_hello(room, node, data):
     room.update_node(node)
     
     # Send updated nodes list to all clients
-    room.broadcast_message({
+    await room.broadcast_message({
         "type": "nodes",
         "nodes": [n.to_dict() for n in room.nodes.values()]
     })
@@ -167,10 +168,9 @@ async def handle_candidate(room, node, data):
     })
     
     # Broadcast to all clients
-    room.broadcast_message({
+    await room.broadcast_message({
         "type": "event",
-        "event_id": event_id,
-        "data": {
+        "event": {
             "kind": data.get("kind"),
             "freq_hz": data.get("freq_hz"),
             "duration_ms": data.get("duration_ms"),

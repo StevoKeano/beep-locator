@@ -5,6 +5,10 @@ let roomId = 'default';
 let nodes = [];
 let events = [];
 
+// Parse room from query parameters
+const urlParams = new URLSearchParams(window.location.search);
+roomId = urlParams.get('room') || 'default';
+
 // Canvas setup
 const canvas = document.getElementById('map-canvas');
 const ctx = canvas.getContext('2d');

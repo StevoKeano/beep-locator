@@ -11,6 +11,10 @@ let ringBuffer = new Float32Array(48000 * 60); // 60 seconds at 48kHz
 let bufferIndex = 0;
 let isListening = false;
 
+// Parse room from query parameters
+const urlParams = new URLSearchParams(window.location.search);
+roomId = urlParams.get('room') || 'default';
+
 // DOM elements
 const statusText = document.getElementById('status-text');
 const permissionText = document.getElementById('permission-text');
