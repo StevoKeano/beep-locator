@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+env/
+
+# Runtime data and audio
+data/
+*.wav
+
+# Generated TLS material
+*.pem
+*.key
+cert.pem
+key.pem
+
+# Local config and logs
+.env
+.env.*
+*.log
+
+# Editor and OS files
+.DS_Store
+.idea/
+.vscode/
+
+# Temporary and backup files
+*.bak
+*.bak-*
+*.orig
+*.rej

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Beep Locator - Admin</title>
+    <link rel="stylesheet" href="/static/admin.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Beep Locator - Admin</h1>
+        
+        <div class="room-info">
+            <p>Room: <span id="room-id">default</span></p>
+            <p>Join URL: <a href="#" id="join-url" target="_blank">Link</a></p>
+        </div>
+
+        <div class="map-container">
+            <canvas id="map-canvas" width="800" height="600"></canvas>
+        </div>
+
+        <div class="controls">
+            <button id="rough-mode-btn">Rough Mode</button>
+            <button id="play-sequence-btn">Play Sequence</button>
+            <button id="set-target-btn">This is the mystery beep</button>
+        </div>
+
+        <div class="nodes-panel">
+            <h2>Nodes</h2>
+            <ul id="nodes-list"></ul>
+        </div>
+
+        <div class="events-panel">
+            <h2>Events</h2>
+            <ul id="events-list"></ul>
+        </div>
+    </div>
+
+    <script src="/static/admin.js"></script>
+</body>
+</html>

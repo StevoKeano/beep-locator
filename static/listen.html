@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Beep Locator - Listener</title>
+    <link rel="stylesheet" href="/static/listen.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Beep Locator - Listener</h1>
+        
+        <div class="status">
+            <p id="status-text">Connecting...</p>
+            <p id="permission-text"></p>
+        </div>
+
+        <div class="controls">
+            <button id="connect-btn">Connect</button>
+            <button id="install-module-btn">Install Module</button>
+        </div>
+
+        <div class="audio-info">
+            <p>Audio Level: <span id="audio-level">0.00</span></p>
+        </div>
+
+        <div class="visualizer-container">
+            <canvas id="visualizer"></canvas>
+        </div>
+
+        <div class="module-info">
+            <h2>Detector Module</h2>
+            <p>Version: <span id="module-version">1</span></p>
+            <pre id="module-source"></pre>
+        </div>
+    </div>
+
+    <script src="/static/listener.js"></script>
+</body>
+</html>
