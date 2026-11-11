@@ -206,3 +206,55 @@ Finish with a concise summary containing:
 - Exact commands run and pass/fail results.
 - How to start the server and join a phone.
 - Remaining limitations and TODO items.
+
+Three generation executions produced the current Beep Locator; the final orchestrator run only audited it.
+1. Initial scaffold — run 20261111-115847-ab803d
+Recorded command from agent-prompt-and-launch.md:
+nohup env CONTEXTCUT_CTX_LIMIT=98304 CONTEXTCUT_CODING_REASONING=auto \
+  ~/contextcut/venv/bin/python ~/contextcut/coding_agent.py \
+  --workspace ~/dev/beep-locator \
+  --base-url http://192.168.137.1:8080/v1 \
+  --model deepseek-v4.1-flash \
+  --max-steps 35 --timeout 2400 --max-tokens 16384 \
+  --json --quiet "$(< /tmp/beep-locator-prompts/beep-locator.txt)"
+Prompt: /tmp/beep-locator-prompts/beep-locator.txt — 194 lines:
+“You are working in an empty sandboxed workspace. Build a complete, runnable local-network application called ‘Beep Locator’…”
+It specified problem.md first, then aiohttp server, WebSocket protocol, admin/listener UI, detector.js, triangulation/GDOP, tests, and hard constraints.
+Result: DeepSeek timed out after 4 steps at 2515s. The same run log contains a follow-up qwen3-coder:30b execution that finished 29 steps in 338s and wrote the scaffold. Commit b965be6.
+
+2. First repair — run 20261111-150819-71536f
+Direct coding_agent.py run; exact timeout/max-token flags were not persisted. Observed command shape:
+CONTEXTCUT_CTX_LIMIT=32768 python3 coding_agent.py \
+  --workspace /home/steve/dev/beep-locator \
+  --model qwen3-coder:30b \
+  --base-url http://192.168.137.1:11434/v1 \
+  --max-steps 24 --json \
+  "$(cat prompts/beep-locator-fix.txt)"
+Prompt: prompts/beep-locator-fix.txt — 79 lines:
+“You are fixing an existing Beep Locator project. Do not rebuild it.”
+It required: FileResponse UI routes, URLSearchParams room parsing, hello_ok join_url, canonical event shape, awaited broadcast_message, strengthened test_server.py; protected triangulate.py and its tests.
+Result: max_steps=24, 1237.927s. Fixed M1–M5, but missed M6 and the remaining app.py awaits; verifier failed.
+
+3. Targeted repair — run 20261111-161903-a4a9e1
+Exact command:
+CONTEXTCUT_CTX_LIMIT=32768 python3 coding_agent.py \
+  --workspace /home/steve/dev/beep-locator \
+  --model qwen3-coder:30b \
+  --base-url http://192.168.137.1:11434/v1 \
+  --max-steps 16 --timeout 1200 --max-tokens 8192 --json \
+  "$(cat prompts/beep-locator-fix-cycle2.txt)"
+Prompt: prompts/beep-locator-fix-cycle2.txt — 54 lines:
+“You are fixing the existing Beep Locator project. Do not rebuild it. The previous implementer already fixed the UI routes…”
+It required: await every room.broadcast_message(...) in app.py, strengthen test_admin_ui/test_listener_ui, add M7/M8 TODO.md entries; do not touch triangulation or already-fixed routes.
+Result: max_steps=16, 37.694s; all intended edits completed; 18 passed
+
+Audit only
+Final verifier run 20261111-162110-87e620 did not generate code. It ran with qwen3:14b-q8_0 and returned overall pass. The committed result is 03cf0b0.
+▣  Plan · Big Pickle · 1m 45s
+Wait, so the deepseek model run was followed by 2 Qwen repair runs?
++ Thought: 2.3s
+Almost. DeepSeek’s timed-out attempt was followed by:
+1. Qwen3-Coder continuation — run 20261111-115847-ab803d, 29 steps, completed the initial scaffold.
+2. Qwen3-Coder repair #1 — run 20261111-150819-71536f, fixed M1–M5.
+3. Qwen3-Coder repair #2 — run 20261111-161903-a4a9e1, fixed M6, awaits, and TODO.md.
+So it was 1 DeepSeek attempt + 3 Qwen code executions total. The final qwen3:14b-q8_0 run was audit-only.
